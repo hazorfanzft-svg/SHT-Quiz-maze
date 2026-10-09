@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SHT Logic Quiz — Логика решает всё</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html[data-theme="dark"]{
+  --bg1:#07061a;--bg2:#171040;--card:rgba(255,255,255,.06);--line:rgba(255,255,255,.14);
+  --text:#eef0ff;--muted:#a3a7d6;--shadow:0 24px 60px rgba(0,0,0,.45);--opt:rgba(255,255,255,.05);--orb:.55;
+}
+html[data-theme="light"]{
+  --bg1:#eef0ff;--bg2:#dfe6ff;--card:rgba(255,255,255,.78);--line:rgba(99,102,241,.22);
+  --text:#1a1a3d;--muted:#5a5d8c;--shadow:0 20px 50px rgba(79,70,229,.15);--opt:rgba(255,255,255,.9);--orb:.35;
+}
+:root{
+  --p:#8b5cf6;--b:#3b82f6;--ok:#22c55e;--bad:#ef4444;--warn:#f59e0b;
+  --font:'Inter','Segoe UI',system-ui,-apple-system,'Helvetica Neue',Roboto,Arial,sans-serif;
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--font);color:var(--text);min-height:100vh;min-height:100dvh;
+  background:linear-gradient(135deg,var(--bg1),var(--bg2));background-attachment:fixed;
+  display:flex;flex-direction:column;overflow-x:hidden;line-height:1.5;
+  transition:background .4s,color .4s;
+}
+.orb{position:fixed;border-radius:50%;filter:blur(90px);opacity:var(--orb);pointer-events:none;z-index:0;animation:float 16s ease-in-out infinite}
+.orb.o1{width:420px;height:420px;background:#7c3aed;top:-120px;left:-100px}
+.orb.o2{width:380px;height:380px;background:#2563eb;bottom:-120px;right:-100px;animation-delay:-6s}
+.orb.o3{width:260px;height:260px;background:#c026d3;top:45%;left:55%;animation-delay:-11s;opacity:calc(var(--orb) * .6)}
+@keyframes float{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(40px,-30px) scale(1.12)}}
+
+.app{position:relative;z-index:1;width:100%;max-width:900px;margin:0 auto;padding:14px 16px 8px;flex:1;display:flex;flex-direction:column}
+header.top{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:6px 0 18px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px;cursor:pointer;background:none;border:0;color:var(--text);font-family:inherit}
+.mk{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-weight:900;font-size:13px;color:#fff;
+  background:linear-gradient(135deg,var(--p),var(--b));box-shadow:0 0 22px rgba(139,92,246,.65)}
+.tools{display:flex;gap:8px}
+.ibtn{width:42px;height:42px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text);font-size:18px;
+  cursor:pointer;transition:.2s;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.ibtn:hover{transform:translateY(-2px);border-color:var(--p);box-shadow:0 0 18px rgba(139,92,246,.55)}
+
+main{flex:1}
+.screen{display:none}
+.screen.active{display:block;animation:rise .5s ease both}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+.glass{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:24px;box-shadow:var(--shadow);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+
+.btn{border:0;cursor:pointer;font-family:inherit;font-size:16px;font-weight:700;color:#fff;padding:14px 26px;border-radius:14px;
+  background:linear-gradient(135deg,var(--p),var(--b));box-shadow:0 8px 26px rgba(99,102,241,.45);transition:.25s}
+.btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 12px 38px rgba(139,92,246,.75)}
+.btn:active:not(:disabled){transform:translateY(0)}
+.btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
+.btn.ghost{background:var(--card);color:var(--text);border:1px solid var(--line);box-shadow:none}
+.btn.ghost:hover:not(:disabled){border-color:var(--p);box-shadow:0 0 22px rgba(139,92,246,.45)}
+.btn.big{font-size:18px;padding:16px 36px}
+.btn.green{background:linear-gradient(135deg,#15803d,#22c55e);box-shadow:0 8px 26px rgba(34,197,94,.4)}
+:focus-visible{outline:3px solid #a78bfa;outline-offset:2px}
+
+/* HOME */
+.hero{text-align:center;padding:18px 0 26px}
+.logo{width:92px;height:92px;margin:0 auto 18px;border-radius:26px;display:grid;place-items:center;font-size:40px;
+  background:linear-gradient(135deg,var(--p),var(--b));box-shadow:0 0 50px rgba(139,92,246,.7);animation:pulse 3.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 36px rgba(139,92,246,.55)}50%{box-shadow:0 0 70px rgba(59,130,246,.85)}}
+h1.title{font-size:clamp(36px,8vw,64px);font-weight:900;letter-spacing:-1.5px;line-height:1.05;
+  background:linear-gradient(100deg,#c4b5fd,#818cf8,#60a5fa,#c4b5fd);background-size:240% 100%;
+  -webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;animation:shine 6s linear infinite}
+@keyframes shine{to{background-position:240% 0}}
+.sub{margin:12px auto 0;max-width:560px;color:var(--muted);font-size:17px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:18px}
+.chip{padding:7px 14px;border-radius:999px;font-size:14px;font-weight:600;border:1px solid var(--line);background:var(--card)}
+
+.settings{display:grid;gap:22px}
+.setrow h3{font-size:15px;font-weight:700;margin-bottom:10px;color:var(--muted)}
+.seg{display:flex;flex-wrap:wrap;gap:8px}
+.seg button{flex:1 1 auto;min-width:78px;padding:11px 14px;border-radius:12px;border:1px solid var(--line);background:var(--opt);color:var(--text);
+  font:inherit;font-weight:600;cursor:pointer;transition:.2s}
+.seg button:hover{border-color:var(--p)}
+.seg button.on{background:linear-gradient(135deg,var(--p),var(--b));color:#fff;border-color:transparent;box-shadow:0 0 22px rgba(139,92,246,.55)}
+.switch{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--opt);cursor:pointer;font-weight:600;width:100%;color:var(--text);font-family:inherit;font-size:16px}
+.knob{width:46px;height:26px;border-radius:99px;background:rgba(128,128,160,.45);position:relative;transition:.25s;flex:none}
+.knob::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:.25s}
+.switch.on .knob{background:linear-gradient(135deg,var(--p),var(--b))}
+.switch.on .knob::after{left:23px}
+.hint{font-size:13px;color:var(--warn);min-height:18px;margin-top:8px}
+.best{padding:14px 16px;border-radius:14px;border:1px dashed var(--p);background:rgba(139,92,246,.1);font-weight:600}
+.best small{display:block;color:var(--muted);font-weight:500}
+.cta{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:6px}
+
+/* RULES */
+.rules h2,.res h2{font-size:28px;margin-bottom:14px}
+.rules ol{padding-left:22px;display:grid;gap:10px;color:var(--text)}
+.rules li{padding-left:4px}
+.rules li::marker{color:var(--p);font-weight:800}
+.rules .cta{margin-top:22px}
+.lv{display:inline-block;padding:1px 9px;border-radius:99px;font-size:13px;font-weight:700;color:#fff}
+
+/* GAME */
+.hud{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}
+.stat{padding:10px 12px;border-radius:14px;border:1px solid var(--line);background:var(--card);text-align:center;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.stat span{display:block;font-size:12px;color:var(--muted)}
+.stat b{font-size:20px}
+.stat.low{border-color:var(--bad);animation:blink .7s infinite}
+.stat.low b{color:var(--bad)}
+@keyframes blink{50%{box-shadow:0 0 22px rgba(239,68,68,.7)}}
+.bar{height:9px;border-radius:99px;background:rgba(128,128,160,.25);overflow:hidden;margin-bottom:10px}
+.bar>i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--p),var(--b));box-shadow:0 0 14px rgba(139,92,246,.8);transition:width .5s ease}
+.bar.t{height:6px;margin-bottom:16px}
+.bar.t>i{background:linear-gradient(90deg,#22c55e,#f59e0b);transition:none}
+.qhead{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-bottom:14px}
+.badge{padding:5px 12px;border-radius:99px;font-size:13px;font-weight:700;color:#fff}
+.badge.type{background:var(--opt);color:var(--text);border:1px solid var(--line);font-weight:600}
+.timerbtn{font:inherit;font-size:13px;font-weight:600;padding:5px 12px;border-radius:99px;border:1px solid var(--line);background:var(--opt);color:var(--text);cursor:pointer}
+.timerbtn:hover{border-color:var(--p)}
+.qtext{font-size:clamp(20px,3.6vw,26px);font-weight:700;line-height:1.35;margin-bottom:20px;white-space:pre-line}
+.opts{display:grid;gap:10px}
+.opt{display:flex;align-items:center;gap:14px;text-align:left;width:100%;padding:14px 16px;border-radius:14px;border:2px solid var(--line);
+  background:var(--opt);color:var(--text);font:inherit;font-size:17px;font-weight:600;cursor:pointer;transition:.2s}
+.opt:hover:not(:disabled){border-color:var(--p);transform:translateX(4px);box-shadow:0 0 22px rgba(139,92,246,.4)}
+.opt .k{flex:none;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-weight:800;font-size:15px;background:rgba(139,92,246,.2);color:var(--text)}
+.opt.sel{border-color:var(--p);background:rgba(139,92,246,.18);box-shadow:0 0 26px rgba(139,92,246,.5)}
+.opt.sel .k{background:linear-gradient(135deg,var(--p),var(--b));color:#fff}
+.opt:disabled{cursor:default}
+.opt.right{border-color:var(--ok);background:rgba(34,197,94,.18);box-shadow:0 0 30px rgba(34,197,94,.55);animation:okpop .6s ease}
+.opt.right .k{background:var(--ok);color:#fff}
+.opt.wrong{border-color:var(--bad);background:rgba(239,68,68,.16);animation:shake .45s}
+.opt.wrong .k{background:var(--bad);color:#fff}
+@keyframes okpop{0%{transform:scale(1)}40%{transform:scale(1.035)}100%{transform:scale(1)}}
+@keyframes shake{20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}
+.actions{display:flex;justify-content:flex-end;margin-top:18px}
+.fb{margin-top:18px;padding:16px 18px;border-radius:16px;border:1px solid;animation:rise .4s ease both}
+.fb.ok{border-color:var(--ok);background:rgba(34,197,94,.13);box-shadow:0 0 34px rgba(34,197,94,.3)}
+.fb.bad{border-color:var(--bad);background:rgba(239,68,68,.11)}
+.fb h4{font-size:19px;margin-bottom:6px}
+.fb p{color:var(--text);opacity:.92}
+.fb .ans{font-weight:700;margin-bottom:6px}
+.hidden{display:none!important}
+
+/* RESULTS */
+.res{text-align:center}
+.trophy{font-size:64px;animation:pulse2 2.2s ease-in-out infinite}
+@keyframes pulse2{50%{transform:scale(1.12) rotate(-4deg)}}
+.rank{font-size:15px;color:var(--muted);margin-bottom:18px}
+.ring{width:150px;height:150px;border-radius:50%;margin:6px auto 20px;display:grid;place-items:center;
+  background:conic-gradient(var(--p) calc(var(--pct) * 1%), rgba(128,128,160,.25) 0)}
+.ring div{width:118px;height:118px;border-radius:50%;background:var(--bg2);display:grid;place-items:center;font-size:30px;font-weight:900}
+html[data-theme="light"] .ring div{background:#f1f3ff}
+.grid4{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:18px}
+.grid4 .stat b{font-size:26px}
+.rec{margin:0 auto 18px;padding:12px 16px;border-radius:14px;font-weight:700;max-width:520px}
+.rec.new{background:rgba(245,158,11,.15);border:1px solid var(--warn);box-shadow:0 0 28px rgba(245,158,11,.35)}
+.rec.old{background:rgba(139,92,246,.1);border:1px dashed var(--p)}
+
+footer{position:relative;z-index:1;text-align:center;padding:26px 16px 24px;color:var(--muted);font-size:14px}
+footer .f1{font-weight:700;color:var(--text);font-size:15px}
+
+/* TOAST / MODAL / CONFETTI */
+#toasts{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:50;display:grid;gap:8px;width:min(92vw,420px);pointer-events:none}
+.toast{padding:12px 18px;border-radius:14px;font-weight:700;text-align:center;color:#fff;background:linear-gradient(135deg,var(--p),var(--b));
+  box-shadow:0 10px 34px rgba(99,102,241,.6);animation:tin .35s ease both}
+.toast.ok{background:linear-gradient(135deg,#15803d,#22c55e);box-shadow:0 10px 34px rgba(34,197,94,.55)}
+.toast.bad{background:linear-gradient(135deg,#b91c1c,#ef4444)}
+.toast.gold{background:linear-gradient(135deg,#d97706,#f59e0b);box-shadow:0 10px 34px rgba(245,158,11,.55)}
+.toast.out{animation:tout .45s ease both}
+@keyframes tin{from{opacity:0;transform:translateY(-16px) scale(.95)}to{opacity:1;transform:none}}
+@keyframes tout{to{opacity:0;transform:translateY(-14px)}}
+#modal{position:fixed;inset:0;z-index:60;background:rgba(5,4,20,.65);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:none;place-items:center;padding:16px}
+#modal.show{display:grid}
+.mbox{max-width:400px;width:100%;text-align:center;animation:rise .3s ease both}
+.mbox p{font-size:17px;font-weight:600;margin-bottom:18px}
+.mbox .cta{margin:0}
+.cf{position:fixed;top:-12px;width:10px;height:14px;z-index:55;pointer-events:none;border-radius:2px;animation:fall linear forwards}
+@keyframes fall{to{transform:translate(var(--x),105vh) rotate(var(--r));opacity:.9}}
+
+@media (max-width:620px){
+  .app{padding:10px 12px 4px}
+  .glass{padding:18px;border-radius:18px}
+  .hud{grid-template-columns:repeat(2,1fr)}
+  .brand span.t{font-size:16px}
+  .opt{font-size:16px;padding:12px 13px}
+  .btn{padding:13px 20px}
+  .actions .btn{width:100%}
+  .cta .btn{flex:1 1 100%}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div>
+<div id="toasts" aria-live="polite"></div>
+<div id="modal" role="dialog" aria-modal="true"><div class="glass mbox"><p id="mtext"></p><div class="cta"><button class="btn ghost" id="mno">Остаться</button><button class="btn" id="myes">Выйти</button></div></div></div>
+
+<div class="app">
+  <header class="top">
+    <button class="brand" id="brand" aria-label="На главную"><div class="mk">SHT</div><span class="t">Logic Quiz</span></button>
+    <div class="tools">
+      <button class="ibtn" id="bHome" title="Главная" aria-label="Главная">🏠</button>
+      <button class="ibtn" id="bRules" title="Правила игры" aria-label="Правила игры">❓</button>
+      <button class="ibtn" id="bSound" title="Звук" aria-label="Звук">🔊</button>
+      <button class="ibtn" id="bTheme" title="Тема" aria-label="Сменить тему">🌙</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- ГЛАВНАЯ -->
+    <section class="screen active" id="s-home">
+      <div class="hero">
+        <div class="logo">🧠</div>
+        <h1 class="title">SHT Logic Quiz</h1>
+        <p class="sub">Игра для тех, кто любит думать. Последовательности, загадки, хитрые вопросы и задачи на рассуждение — от лёгких до экспертных.</p>
+        <div class="chips"><span class="chip" id="chipQ">100+ вопросов</span><span class="chip">4 уровня сложности</span><span class="chip">9 типов задач</span></div>
+      </div>
+      <div class="glass settings">
+        <div class="setrow"><h3>Количество вопросов</h3>
+          <div class="seg" id="segCount"><button data-v="10">10</button><button data-v="20">20</button><button data-v="50">50</button></div>
+          <div class="hint" id="hint"></div></div>
+        <div class="setrow"><h3>Уровень сложности</h3>
+          <div class="seg" id="segDiff">
+            <button data-v="all">Все уровни</button><button data-v="0">Лёгкий</button><button data-v="1">Средний</button><button data-v="2">Сложный</button><button data-v="3">Эксперт</button>
+          </div></div>
+        <div class="setrow"><button class="switch" id="swTimer" type="button"><span>⏱ Таймер на каждый вопрос</span><span class="knob"></span></button></div>
+        <div class="best" id="best"></div>
+        <div class="cta"><button class="btn big" id="bStart">Начать игру</button><button class="btn ghost big" id="bRules2">Правила игры</button></div>
+      </div>
+    </section>
+
+    <!-- ПРАВИЛА -->
+    <section class="screen" id="s-rules">
+      <div class="glass rules">
+        <h2>Правила игры</h2>
+        <ol>
+          <li>Выберите количество вопросов (10, 20 или 50) и уровень сложности на главном экране.</li>
+          <li>Вопросы показываются по одному. У каждого вопроса 4 варианта ответа, верный — только один.</li>
+          <li>Выберите вариант и нажмите «Ответить». Изменить ответ после проверки нельзя.</li>
+          <li>За каждый правильный ответ вы получаете 10 очков. За неверный ответ очки не списываются.</li>
+          <li>На ответ даётся время: <span class="lv" style="background:#22c55e">Лёгкий</span> 20 с, <span class="lv" style="background:#3b82f6">Средний</span> 30 с, <span class="lv" style="background:#a855f7">Сложный</span> 45 с, <span class="lv" style="background:#f43f5e">Эксперт</span> 60 с. Если время вышло, ответ засчитывается как неверный. Таймер можно отключить.</li>
+          <li>В режиме «Все уровни» вопросы идут от лёгких к экспертным.</li>
+          <li>После каждого ответа вы увидите правильный вариант и объяснение решения.</li>
+          <li>Лучший результат сохраняется в браузере отдельно для каждого сочетания «количество вопросов + уровень».</li>
+          <li>Горячие клавиши: 1–4 — выбрать вариант, Enter — «Ответить» и «Следующий вопрос».</li>
+          <li>Читайте условия внимательно: в некоторых вопросах есть подвох.</li>
+        </ol>
+        <div class="cta"><button class="btn ghost" id="bBack">Назад</button><button class="btn" id="bStart2">Начать игру</button></div>
+      </div>
+    </section>
+
+    <!-- ИГРА -->
+    <section class="screen" id="s-game">
+      <div class="hud">
+        <div class="stat"><span>Вопрос</span><b><i id="qn">1</i>/<i id="qt">10</i></b></div>
+        <div class="stat"><span>Правильно</span><b id="cc">0</b></div>
+        <div class="stat"><span>Очки</span><b id="sc">0</b></div>
+        <div class="stat" id="timerChip"><span>Время</span><b id="tm">0</b></div>
+      </div>
+      <div class="bar" aria-label="Прогресс"><i id="prog"></i></div>
+      <div class="bar t" id="tbarWrap"><i id="tbar"></i></div>
+      <div class="glass">
+        <div class="qhead"><div style="display:flex;gap:8px;flex-wrap:wrap"><span class="badge" id="lvl"></span><span class="badge type" id="typ"></span></div>
+          <button class="timerbtn" id="bTimerToggle"></button></div>
+        <div class="qtext" id="qtext"></div>
+        <div class="opts" id="opts"></div>
+        <div class="fb hidden" id="fb"></div>
+        <div class="actions"><button class="btn" id="bAnswer" disabled>Ответить</button><button class="btn green hidden" id="bNext">Следующий вопрос</button></div>
+      </div>
+    </section>
+
+    <!-- РЕЗУЛЬТАТЫ -->
+    <section class="screen" id="s-res">
+      <div class="glass res">
+        <div class="trophy" id="rTrophy">🏆</div>
+        <h2>Тест завершён!</h2>
+        <div class="rank" id="rRank"></div>
+        <div class="ring" id="rRing" style="--pct:0"><div id="rPct">0%</div></div>
+        <div class="grid4">
+          <div class="stat"><span>Правильных</span><b id="rOk">0</b></div>
+          <div class="stat"><span>Неправильных</span><b id="rBad">0</b></div>
+          <div class="stat"><span>Точность</span><b id="rAcc">0%</b></div>
+          <div class="stat"><span>Очки</span><b id="rScore">0</b></div>
+        </div>
+        <div class="rec" id="rRec"></div>
+        <div class="cta"><button class="btn big" id="bAgain">Пройти ещё раз</button><button class="btn ghost big" id="bRestart">Начать заново</button></div>
+        <div class="cta"><button class="btn ghost" id="bToHome">На главную страницу</button></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<footer>
+  <div class="f1">SHT Logic Quiz — Логика решает всё</div>
+  <div class="f2">Создатель: Shahrom Toktobaev</div>
+</footer>
+
+<script>
+(function(){
+'use strict';
+
+/* ===================== ДАННЫЕ ===================== */
+var TYPES={s:'Числовая последовательность',p:'Закономерность',m:'Математическая логика',a:'Внимательность',h:'Люди и предметы',o:'Лишний элемент',k:'Вопрос с подвохом',g:'Геометрия',r:'Рассуждение'};
+var LEVELS=[
+  {n:'Лёгкий',c:'#22c55e',t:20},
+  {n:'Средний',c:'#3b82f6',t:30},
+  {n:'Сложный',c:'#a855f7',t:45},
+  {n:'Эксперт',c:'#f43f5e',t:60}
+];
+var PRAISE=['Отлично!','Верно!','Блестяще!','Чистая логика!','Так держать!','В точку!'];
+
+/* формат: [уровень, тип, вопрос, правильный ответ, [3 неправильных], объяснение] */
+var RAW=[
+/* ---------- ЛЁГКИЙ ---------- */
+[0,'s',"Продолжите последовательность: 2, 4, 6, 8, ?","10",["9","12","11"],"Каждое число больше предыдущего на 2: 8 + 2 = 10."],
+[0,'s',"Продолжите последовательность: 5, 10, 15, 20, ?","25",["30","22","24"],"Шаг равен 5: 20 + 5 = 25."],
+[0,'s',"Продолжите последовательность: 1, 3, 5, 7, ?","9",["8","10","11"],"Это нечётные числа подряд, после 7 идёт 9."],
+[0,'o',"Какое слово лишнее: яблоко, груша, морковь, слива?","морковь",["яблоко","груша","слива"],"Яблоко, груша и слива — фрукты, а морковь — овощ."],
+[0,'o',"Какое слово лишнее: понедельник, вторник, январь, пятница?","январь",["понедельник","вторник","пятница"],"Остальные слова — дни недели, а январь — месяц."],
+[0,'k',"Сколько месяцев в году имеют 28 дней?","Все 12",["Только один","Ни одного","Два"],"В каждом месяце есть 28-е число, поэтому 28 дней есть во всех двенадцати месяцах."],
+[0,'a',"Что тяжелее: килограмм ваты или килограмм железа?","Одинаково",["Килограмм железа","Килограмм ваты","Зависит от погоды"],"И то и другое весит ровно 1 килограмм."],
+[0,'m',"Три яблока стоят 6 монет. Сколько стоят 5 яблок?","10 монет",["12 монет","15 монет","8 монет"],"Одно яблоко стоит 6 ÷ 3 = 2 монеты, значит 5 яблок стоят 5 × 2 = 10 монет."],
+[0,'h',"У Ани 3 конфеты, а у Бори на 2 конфеты больше. Сколько конфет у Бори?","5",["1","6","4"],"3 + 2 = 5."],
+[0,'s',"Продолжите последовательность: 10, 20, 30, 40, ?","50",["60","45","55"],"Шаг равен 10: 40 + 10 = 50."],
+[0,'g',"Сколько вершин у куба?","8",["6","4","12"],"У куба 8 вершин, 12 рёбер и 6 граней."],
+[0,'p',"Какая фигура будет следующей: круг, квадрат, круг, квадрат, круг, ?","квадрат",["круг","треугольник","звезда"],"Фигуры чередуются: круг, квадрат. После круга снова идёт квадрат."],
+[0,'k',"Сколько яиц можно съесть натощак?","Одно",["Два","Три","Ни одного"],"После первого яйца вы уже не натощак."],
+[0,'a',"Петух снёс яйцо на крыше. В какую сторону оно упадёт?","Петухи не несут яиц",["Влево","Вправо","Останется на коньке крыши"],"Яйца несут куры, а не петухи."],
+[0,'m',"Сколько будет 7 + 8 − 5?","10",["9","11","12"],"7 + 8 = 15, затем 15 − 5 = 10."],
+[0,'o',"Какое слово лишнее: кошка, собака, воробей, хомяк?","воробей",["кошка","собака","хомяк"],"Воробей — птица, остальные — млекопитающие."],
+[0,'s',"Продолжите последовательность: 100, 90, 80, 70, ?","60",["65","50","55"],"Каждое число меньше предыдущего на 10."],
+[0,'h',"Сколько минимум детей может быть в семье, где три сестры и у каждой из них есть брат?","4",["6","3","5"],"У всех трёх сестёр может быть один и тот же брат: 3 сестры + 1 брат = 4 ребёнка."],
+[0,'m',"Чему равна половина от половины числа 100?","25",["50","20","10"],"Половина от 100 — это 50, а половина от 50 — это 25."],
+[0,'a',"Сколько букв в слове «ответ»?","5",["4","6","7"],"О-т-в-е-т: пять букв."],
+[0,'k',"Что можно увидеть с закрытыми глазами?","Сон",["Дорогу","Книгу","Солнце"],"Сны мы видим именно с закрытыми глазами."],
+[0,'s',"Продолжите последовательность: 1, 2, 4, 8, ?","16",["10","12","14"],"Каждое число вдвое больше предыдущего: 8 × 2 = 16."],
+[0,'r',"Если вчера было воскресенье, то какой день будет завтра?","Вторник",["Понедельник","Среда","Суббота"],"Вчера — воскресенье, значит сегодня понедельник, а завтра вторник."],
+[0,'k',"У вас было 5 яблок, и вы взяли 3 из них. Сколько яблок у вас теперь?","3",["2","5","8"],"Вы взяли 3 яблока — именно они теперь у вас. Остальные 2 остались на месте."],
+[0,'o',"Какая фигура лишняя: треугольник, квадрат, круг, прямоугольник?","круг",["треугольник","квадрат","прямоугольник"],"У остальных фигур есть углы и прямые стороны, а у круга их нет."],
+[0,'p',"Продолжите ряд дней недели: пн, вт, ср, ?","чт",["пт","сб","вс"],"Дни недели идут по порядку: после среды — четверг."],
+[0,'r',"Все птицы имеют крылья. Ворона — птица. Что из этого следует?","У вороны есть крылья",["Ворона не умеет летать","Ворона — рыба","Ворона живёт только зимой"],"Если все птицы имеют крылья, а ворона — птица, то у вороны есть крылья."],
+[0,'g',"Сколько сторон у шестиугольника?","6",["5","8","7"],"Название говорит само за себя: шесть углов и шесть сторон."],
+
+/* ---------- СРЕДНИЙ ---------- */
+[1,'s',"Продолжите последовательность: 2, 6, 12, 20, 30, ?","42",["40","36","44"],"Разности: 4, 6, 8, 10, дальше 12. Получаем 30 + 12 = 42 (это числа вида n × (n + 1))."],
+[1,'s',"Продолжите последовательность: 1, 1, 2, 3, 5, 8, ?","13",["11","12","14"],"Каждое число — сумма двух предыдущих (числа Фибоначчи): 5 + 8 = 13."],
+[1,'s',"Продолжите последовательность: 3, 6, 11, 18, 27, ?","38",["36","37","40"],"Разности: 3, 5, 7, 9, дальше 11. Получаем 27 + 11 = 38."],
+[1,'s',"Продолжите последовательность: 1, 4, 9, 16, 25, ?","36",["30","34","49"],"Это квадраты натуральных чисел: 6² = 36."],
+[1,'s',"Продолжите последовательность: 2, 3, 5, 7, 11, 13, ?","17",["15","19","16"],"Это простые числа по порядку. После 13 следующее простое число — 17."],
+[1,'p',"Продолжите ряд букв: А, В, Д, Ж, ?","И",["З","К","Й"],"Буквы берутся через одну: А (1), В (3), Д (5), Ж (7), И (9)."],
+[1,'m',"Поезд движется со скоростью 60 км/ч. За какое время он проедет 150 км?","2,5 часа",["2 часа","3 часа","2 часа 15 минут"],"Время = расстояние ÷ скорость = 150 ÷ 60 = 2,5 часа."],
+[1,'m',"Число увеличили на 20% и получили 60. Какое число было сначала?","50",["48","52","40"],"Число × 1,2 = 60, значит число равно 60 ÷ 1,2 = 50."],
+[1,'h',"Саша выше Пети, а Петя выше Васи. Кто из них самый низкий?","Вася",["Саша","Петя","Определить нельзя"],"Порядок по росту: Саша > Петя > Вася. Самый низкий — Вася."],
+[1,'m',"Отец старше сына на 28 лет. Какой будет эта разница через 5 лет?","28 лет",["33 года","23 года","5 лет"],"Оба стареют одинаково, поэтому разница в возрасте никогда не меняется."],
+[1,'k',"Врач дал вам три таблетки и сказал принимать по одной каждые полчаса. На сколько хватит таблеток?","На 1 час",["На 1,5 часа","На 30 минут","На 3 часа"],"Первую таблетку принимаем сразу, вторую через 30 минут, третью через 60 минут. Всего проходит 1 час."],
+[1,'o',"Найдите лишнее число: 2, 4, 6, 9, 12","9",["2","6","12"],"Все числа чётные, кроме 9."],
+[1,'o',"Найдите лишнее число: 16, 25, 36, 48, 49","48",["16","25","49"],"Остальные числа — точные квадраты (4², 5², 6², 7²), а 48 квадратом не является."],
+[1,'a',"Сколько раз цифра 9 встречается в записи всех чисел от 1 до 20?","2",["1","3","11"],"Только в числах 9 и 19."],
+[1,'m',"Две кошки ловят двух мышей за 2 минуты. Сколько кошек нужно, чтобы поймать 100 мышей за 100 минут?","2",["100","50","1"],"Одна кошка ловит 1 мышь за 2 минуты. Две кошки ловят 1 мышь в минуту, значит за 100 минут — 100 мышей."],
+[1,'h',"В семье два отца и два сына, но всего три человека. Как такое возможно?","Дед, отец и сын",["Отец и два сына","Два брата и отец","Это невозможно"],"Дед — отец отца, отец — одновременно отец и сын, внук — сын. Итого 2 отца и 2 сына среди трёх человек."],
+[1,'m',"Сколько будет 15% от 200?","30",["20","25","35"],"10% от 200 — это 20, 5% — это 10. Всего 20 + 10 = 30."],
+[1,'g',"Сколько диагоналей у шестиугольника?","9",["6","12","8"],"Из каждой вершины выходит 3 диагонали: 6 × 3 ÷ 2 = 9."],
+[1,'g',"Сколько всего квадратов (любого размера) можно найти на сетке 3 × 3 клетки?","14",["9","10","13"],"Квадратов 1×1 — 9, квадратов 2×2 — 4, квадрат 3×3 — 1. Итого 9 + 4 + 1 = 14."],
+[1,'s',"Продолжите последовательность: 1, 2, 6, 24, 120, ?","720",["240","600","480"],"Каждое число умножается на следующее натуральное: 120 × 6 = 720 (факториалы)."],
+[1,'p',"Продолжите ряд: AB, CD, EF, GH, ?","IJ",["HI","JK","IK"],"Это пары соседних букв латинского алфавита подряд: A B, C D, E F, G H, I J."],
+[1,'a',"Сколько месяцев в году имеют 31 день?","7",["6","8","5"],"Январь, март, май, июль, август, октябрь и декабрь — всего 7 месяцев."],
+[1,'m',"Среднее арифметическое чисел 3 и x равно 10. Чему равно x?","17",["13","7","20"],"(3 + x) ÷ 2 = 10, значит 3 + x = 20 и x = 17."],
+[1,'h',"Аня, Борис и Вера стоят в очереди. Аня не первая и не последняя, Борис не последний. Кто стоит первым?","Борис",["Аня","Вера","Определить нельзя"],"Аня стоит второй. Борис не последний, значит он первый, а Вера — третья."],
+[1,'k',"Что произойдёт, если красный камень упадёт в Чёрное море?","Он намокнет",["Море покраснеет","Камень станет чёрным","Море высохнет"],"Цвет здесь ни при чём: любой камень, попав в воду, просто намокает."],
+[1,'m',"Сколько распилов нужно сделать, чтобы распилить бревно на 5 частей?","4",["5","3","6"],"Каждый распил добавляет одну часть: для 5 частей нужно 4 распила."],
+[1,'o',"Какое слово лишнее: Москва, Париж, Берлин, Дунай?","Дунай",["Москва","Париж","Берлин"],"Москва, Париж и Берлин — столицы, а Дунай — река."],
+[1,'r',"Все розы — цветы. Некоторые цветы быстро вянут. Верно ли, что все розы быстро вянут?","Нельзя утверждать",["Да, всегда","Нет, они никогда не вянут","Только красные розы"],"Из условий следует лишь то, что быстро вянут какие-то цветы. Какие именно — неизвестно, поэтому о всех розах утверждать нельзя."],
+
+/* ---------- СЛОЖНЫЙ ---------- */
+[2,'s',"Продолжите последовательность: 1, 2, 4, 7, 11, 16, ?","22",["21","23","24"],"Разности растут: +1, +2, +3, +4, +5, а дальше +6. Получаем 16 + 6 = 22."],
+[2,'s',"Продолжите последовательность: 2, 5, 10, 17, 26, ?","37",["35","36","38"],"Числа имеют вид n² + 1: 1²+1, 2²+1, 3²+1, 4²+1, 5²+1, значит 6² + 1 = 37."],
+[2,'s',"Продолжите последовательность: 1, 8, 27, 64, ?","125",["100","81","216"],"Это кубы натуральных чисел: 1³, 2³, 3³, 4³, а дальше 5³ = 125."],
+[2,'s',"Продолжите последовательность: 3, 5, 9, 17, 33, ?","65",["64","66","49"],"Разности удваиваются: 2, 4, 8, 16, дальше 32. Получаем 33 + 32 = 65."],
+[2,'s',"Продолжите последовательность: 5, 6, 8, 11, 15, ?","20",["19","21","22"],"Разности: 1, 2, 3, 4, дальше 5. Получаем 15 + 5 = 20."],
+[2,'s',"Продолжите последовательность: 1, 4, 27, 256, ?","3125",["625","1024","1296"],"Каждое число — это n в степени n: 1¹, 2², 3³, 4⁴, а дальше 5⁵ = 3125."],
+[2,'p',"Продолжите ряд букв: О, Д, Т, Ч, П, Ш, ?","С",["В","Д","О"],"Это первые буквы чисел: Один, Два, Три, Четыре, Пять, Шесть, а дальше Семь — буква С."],
+[2,'p',"Продолжите ряд букв: Я, Ф, М, А, М, И, И, ?","А",["С","О","Н"],"Это первые буквы месяцев: Январь, Февраль, Март, Апрель, Май, Июнь, Июль, а дальше Август — буква А."],
+[2,'m',"Сумма двух чисел равна 20, а их разность равна 4. Чему равно большее число?","12",["10","14","16"],"Большее число = (20 + 4) ÷ 2 = 12, меньшее = (20 − 4) ÷ 2 = 8."],
+[2,'m',"Часы показывают 3:15. Какой угол между часовой и минутной стрелками?","7,5°",["0°","15°","22,5°"],"Минутная стрелка на 90°. Часовая за 15 минут уходит от 90° ещё на 7,5° (15 мин × 0,5° в минуту). Разница — 7,5°."],
+[2,'m',"Сколько существует двузначных чисел, сумма цифр которых равна 5?","5",["4","6","9"],"Это числа 14, 23, 32, 41 и 50."],
+[2,'m',"Сколько нулей в конце числа 10! (произведения всех чисел от 1 до 10)?","2",["1","3","10"],"Нули дают пары множителей 2 и 5. Пятёрок две (в числах 5 и 10), поэтому нулей два."],
+[2,'m',"Сколько существует трёхзначных чисел, которые делятся на 5?","180",["150","200","179"],"Трёхзначных чисел всего 900, и каждое пятое делится на 5: 900 ÷ 5 = 180."],
+[2,'h',"Человек сказал: «Я лжец». Рыцари всегда говорят правду, лжецы всегда лгут. Кто он?","Так сказать не может никто",["Рыцарь","Лжец","Определить нельзя, он может быть кем угодно"],"Рыцарь не может назвать себя лжецом, ведь он говорит правду. Лжец тоже не может, потому что тогда его слова были бы правдой. Эта фраза невозможна для обоих."],
+[2,'h',"На острове живут рыцари (всегда говорят правду) и лжецы (всегда лгут). А говорит: «Мы с Б оба лжецы». Кто такие А и Б?","А — лжец, Б — рыцарь",["Оба рыцари","Оба лжецы","А — рыцарь, Б — лжец"],"Если бы А был рыцарём, он бы сказал правду и был бы лжецом — противоречие. Значит А — лжец, его фраза ложна, поэтому Б не лжец, а рыцарь."],
+[2,'h',"В классе 30 учеников. 18 любят математику, 15 любят физику, а 5 не любят ни то ни другое. Сколько учеников любят оба предмета?","8",["3","5","10"],"Хотя бы один предмет любят 30 − 5 = 25 человек. Оба — это 18 + 15 − 25 = 8."],
+[2,'h',"Три коробки подписаны «яблоки», «апельсины» и «смесь», но все подписи неверные. Из какой коробки достаточно достать один фрукт, чтобы понять содержимое всех?","Из коробки «смесь»",["Из коробки «яблоки»","Из коробки «апельсины»","Нужно достать фрукты из каждой"],"В коробке «смесь» на самом деле лежат либо одни яблоки, либо одни апельсины. Достав фрукт, мы узнаём содержимое этой коробки, а затем и остальных."],
+[2,'r',"Через 3 дня после вчерашнего дня будет пятница. Какой сегодня день недели?","Среда",["Вторник","Четверг","Понедельник"],"Вчера + 3 дня = пятница, значит вчера был вторник, а сегодня среда."],
+[2,'k',"Двое играли в шахматы 4 часа. Сколько часов играл каждый из них?","4 часа",["2 часа","8 часов","1 час"],"Они играли друг с другом одновременно, поэтому каждый играл все 4 часа."],
+[2,'k',"Что принадлежит вам, но другие используют это чаще, чем вы сами?","Ваше имя",["Ваш телефон","Ваши деньги","Ваше время"],"Имя нужно в первую очередь окружающим: именно они чаще всего к вам обращаются."],
+[2,'k',"Вы участвуете в гонке и обгоняете бегуна, который шёл вторым. Какое место вы заняли?","Второе",["Первое","Третье","Последнее"],"Вы заняли его место, то есть стали вторым. Первого вы не обгоняли."],
+[2,'a',"Чему равно произведение всех цифр от 0 до 9?","0",["362880","45","1"],"В произведении есть множитель 0, поэтому результат равен нулю."],
+[2,'g',"Куб покрасили снаружи и разрезали на 27 одинаковых маленьких кубиков (3 × 3 × 3). Сколько кубиков окрашены ровно с двух сторон?","12",["8","6","24"],"Такие кубики стоят посередине рёбер большого куба. Рёбер 12, на каждом по одному такому кубику."],
+[2,'g',"Сколько всего прямоугольников (включая квадраты) на сетке 2 × 2 клетки?","9",["4","6","10"],"Маленьких клеток 4, горизонтальных «доминошек» 2, вертикальных 2 и один большой квадрат: 4 + 2 + 2 + 1 = 9."],
+[2,'g',"У выпуклого многоугольника сумма внутренних углов равна 720°. Сколько у него сторон?","6",["5","7","8"],"Сумма углов равна (n − 2) × 180°. Из (n − 2) × 180 = 720 получаем n = 6."],
+[2,'g',"Периметр квадрата равен 20 см. Чему равна его площадь?","25 см²",["20 см²","100 см²","16 см²"],"Сторона квадрата 20 ÷ 4 = 5 см, площадь 5 × 5 = 25 см²."],
+[2,'r',"Один из трёх подозреваемых — вор. Алекс: «Это Борис». Борис: «Это не я». Виктор: «Это Алекс». Известно, что ровно одно из трёх утверждений ложно. Кто вор?","Алекс",["Борис","Виктор","Определить нельзя"],"Если вор Алекс, то ложно только его высказывание, а слова Бориса и Виктора верны. Если вор Борис или Виктор, ложных утверждений будет два."],
+[2,'r',"В тёмной комнате лежат 10 чёрных и 10 белых носков. Сколько носков нужно достать, чтобы гарантированно получить пару одного цвета?","3",["2","11","4"],"Цветов всего два. Среди любых трёх носков хотя бы два будут одного цвета."],
+
+/* ---------- ЭКСПЕРТ ---------- */
+[3,'s',"Продолжите последовательность: 1, 11, 21, 1211, 111221, ?","312211",["1112221","211221","312221"],"Каждый член описывает предыдущий. 111221 — это «три единицы, две двойки, одна единица», то есть 312211."],
+[3,'s',"Продолжите последовательность: 1, 2, 6, 15, 31, ?","56",["52","60","63"],"Разности — квадраты: 1, 4, 9, 16, а дальше 25. Получаем 31 + 25 = 56."],
+[3,'s',"Продолжите последовательность: 0, 1, 1, 2, 4, 7, 13, 24, ?","44",["37","48","42"],"Каждое число — сумма трёх предыдущих: 7 + 13 + 24 = 44."],
+[3,'s',"Продолжите последовательность: 2, 12, 36, 80, 150, ?","252",["240","210","264"],"Члены вычисляются по формуле n² × (n + 1): 1×2, 4×3, 9×4, 16×5, 25×6, а дальше 36 × 7 = 252."],
+[3,'s',"Продолжите последовательность: 4, 6, 9, 14, 23, 40, ?","73",["70","71","75"],"Разности: 2, 3, 5, 9, 17, а каждая следующая равна удвоенной предыдущей минус 1, то есть 33. Получаем 40 + 33 = 73."],
+[3,'s',"Продолжите последовательность: 6, 28, 496, ?","8128",["1024","2016","4096"],"Это совершенные числа — каждое равно сумме своих делителей, кроме самого себя. Следующее после 496 — 8128."],
+[3,'p',"Продолжите ряд букв: O, T, T, F, F, S, S, E, ?","N",["T","O","Z"],"Это первые буквы английских чисел: One, Two, Three, Four, Five, Six, Seven, Eight, а дальше Nine — буква N."],
+[3,'p',"Продолжите последовательность: 31, 28, 31, 30, 31, 30, 31, 31, ?","30",["31","28","29"],"Это количество дней в месяцах по порядку. После августа идёт сентябрь, в котором 30 дней."],
+[3,'m',"Сколькими способами можно рассадить 4 человек в ряд из 4 стульев?","24",["12","16","120"],"Первого можно посадить 4 способами, второго 3, третьего 2, последнего 1: 4! = 24."],
+[3,'m',"В коробке 3 красных и 2 синих шара. Какова вероятность достать подряд два красных шара (без возврата)?","30%",["36%","60%","20%"],"Вероятность равна 3/5 × 2/4 = 6/20 = 3/10, то есть 30%."],
+[3,'m',"Сколько нулей в конце числа 25! (произведения всех чисел от 1 до 25)?","6",["5","4","7"],"Считаем множители 5: числа 5, 10, 15, 20 дают по одной пятёрке, а 25 — две. Всего 4 + 2 = 6."],
+[3,'m',"Чему равна сумма 1 + 2 + 3 + ... + 100?","5050",["5000","5100","5005"],"Пары 1+100, 2+99 и так далее дают по 101. Таких пар 50, значит 50 × 101 = 5050."],
+[3,'m',"Какой остаток получится при делении 2¹⁰ на 7?","2",["1","3","4"],"Так как 2³ = 8 даёт остаток 1, то 2⁹ тоже даёт остаток 1, а 2¹⁰ = 2⁹ × 2 даёт остаток 2. Проверка: 1024 = 7 × 146 + 2."],
+[3,'m',"Два поезда находятся на расстоянии 300 км и едут навстречу друг другу со скоростями 60 и 40 км/ч. Муха летает между ними со скоростью 100 км/ч, пока поезда не встретятся. Сколько километров она пролетит?","300 км",["150 км","200 км","250 км"],"Поезда сближаются со скоростью 100 км/ч и встретятся через 3 часа. Всё это время муха летит со скоростью 100 км/ч, то есть 300 км."],
+[3,'h',"8 человек пожали друг другу руки, и каждая пара сделала это ровно один раз. Сколько было рукопожатий?","28",["56","64","32"],"Число пар из 8 человек равно 8 × 7 ÷ 2 = 28."],
+[3,'h',"Трое говорят. А: «Среди нас ровно один лжец». Б: «Среди нас ровно два лжеца». В: «Среди нас ровно три лжеца». Сколько среди них лжецов?","2",["1","3","0"],"Утверждения несовместимы, поэтому верно не больше одного. Если верно только Б, то лжецов двое (А и В) — всё сходится. Другие варианты приводят к противоречию."],
+[3,'h',"Антон, Борис и Вадим — врач, инженер и учитель в неизвестном порядке. Антон не врач. Борис не инженер и не врач. Кто врач?","Вадим",["Антон","Борис","Определить нельзя"],"Борис не инженер и не врач, значит он учитель. Антон не врач, значит он инженер. Врачом остаётся Вадим."],
+[3,'r',"Пастух должен перевезти через реку волка, козу и капусту. В лодку помещается он сам и ещё один пассажир. Волка нельзя оставлять с козой, а козу с капустой. Сколько всего переправ (в обе стороны) потребуется как минимум?","7",["5","6","9"],"Коза туда, пастух назад, волк туда, коза обратно, капуста туда, пастух назад, коза туда. Всего 7 переправ."],
+[3,'k',"Какое слово всегда пишется неправильно?","«Неправильно»",["«Ошибка»","«Правильно»","«Орфография»"],"Слово «неправильно» всегда пишется именно так, то есть правильно. Загадка играет словами: ответ — само слово «неправильно»."],
+[3,'k',"Какая цифра станет больше, если её перевернуть вверх ногами?","Цифра 6",["Цифра 8","Цифра 0","Цифра 1"],"Перевёрнутая шестёрка превращается в девятку, а 9 больше 6."],
+[3,'k',"У меня есть города, но нет домов. Есть горы, но нет деревьев. Есть вода, но нет рыб. Что это?","Карта",["Сон","Телевизор","Река"],"На карте нарисованы города, горы и водоёмы, но настоящих домов, деревьев и рыб там нет."],
+[3,'a',"Сколько животных каждого вида взял Моисей на свой ковчег?","Ни одного, это был Ной",["Каждой твари по паре","По семь пар","Только по два"],"Ковчег строил Ной, а не Моисей. Это вопрос на внимательность."],
+[3,'g',"Сколько всего квадратов (любого размера) на шахматной доске 8 × 8?","204",["64","128","196"],"Квадратов k × k на доске 8 × 8 ровно (9 − k)². Сумма 64 + 49 + 36 + 25 + 16 + 9 + 4 + 1 = 204."],
+[3,'g',"Сколько всего прямоугольников (включая квадраты) можно найти на шахматной доске 8 × 8?","1296",["204","1024","1204"],"Прямоугольник задаётся выбором двух вертикальных и двух горизонтальных линий из 9. Всего C(9,2)² = 36² = 1296."],
+[3,'g',"Сколько диагоналей у выпуклого 12-угольника?","54",["48","66","60"],"Число диагоналей равно n × (n − 3) ÷ 2 = 12 × 9 ÷ 2 = 54."],
+[3,'g',"Сколько осей симметрии у правильного шестиугольника?","6",["3","4","12"],"Три оси проходят через противоположные вершины, ещё три — через середины противоположных сторон. Всего 6."],
+[3,'r',"Вы стоите перед тремя выключателями снаружи комнаты. Только один из них включает лампочку внутри. В комнату можно зайти ровно один раз. Как определить нужный выключатель?","Включить первый на несколько минут, выключить, включить второй и зайти: горит — второй, тёплая — первый, холодная — третий",["Включить все три и посмотреть, какая лампа загорится","Это невозможно сделать за один заход","Включить сразу два выключателя и зайти"],"Лампа даёт два признака: свет и тепло. Горящая лампа соответствует включённому выключателю, тёплая выключенная — тому, что включали раньше, холодная — третьему."],
+[3,'r',"Среди 8 монет одна фальшивая и она легче остальных. За какое минимальное число взвешиваний на чашечных весах можно гарантированно её найти?","2",["1","3","4"],"Делим монеты на 3, 3 и 2. Первым взвешиванием сравниваем две группы по 3 монеты и узнаём, в какой группе лёгкая (или она среди оставшихся двух). Вторым взвешиванием находим монету."],
+[3,'r',"Среди 12 монет одна фальшивая, неизвестно, легче она или тяжелее остальных. За какое минимальное число взвешиваний на чашечных весах можно гарантированно найти её и определить, легче она или тяжелее?","3",["2","4","6"],"Всего вариантов 12 × 2 = 24. Каждое взвешивание имеет 3 исхода, поэтому двух взвешиваний (9 исходов) мало, а трёх (27 исходов) достаточно."]
+];
+
+var BANK=RAW.map(function(r){return {l:r[0],t:r[1],q:r[2],c:r[3],w:r[4],e:r[5]};});
+
+/* ===================== УТИЛИТЫ ===================== */
+function $(id){return document.getElementById(id);}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+var store={
+  get:function(k){try{return localStorage.getItem(k);}catch(e){return null;}},
+  set:function(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+};
+
+/* ===================== НАСТРОЙКИ ===================== */
+var S={count:10,diff:'all',timer:true,sound:true,theme:'dark'};
+(function loadSettings(){
+  var raw=store.get('sht_settings');
+  if(raw){try{var o=JSON.parse(raw);for(var k in S){if(o[k]!==undefined)S[k]=o[k];}}catch(e){}}
+  if([10,20,50].indexOf(S.count)<0)S.count=10;
+  if(['all','0','1','2','3'].indexOf(String(S.diff))<0)S.diff='all';
+  S.diff=String(S.diff);
+})();
+function saveSettings(){store.set('sht_settings',JSON.stringify(S));}
+
+/* ===================== ЗВУК ===================== */
+var AC=null;
+function ctx(){
+  if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)();}catch(e){AC=null;}}
+  if(AC&&AC.state==='suspended'){AC.resume();}
+  return AC;
+}
+function tone(f,d,type,at,vol){
+  if(!S.sound)return;
+  var c=ctx();if(!c)return;
+  try{
+    var o=c.createOscillator(),g=c.createGain(),t=c.currentTime+(at||0);
+    o.type=type||'sine';o.frequency.value=f;
+    g.gain.setValueAtTime(0.0001,t);
+    g.gain.exponentialRampToValueAtTime(vol||0.15,t+0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001,t+d);
+    o.connect(g);g.connect(c.destination);o.start(t);o.stop(t+d+0.05);
+  }catch(e){}
+}
+var sfx={
+  click:function(){tone(540,0.08,'triangle',0,0.12);},
+  ok:function(){[523,659,784].forEach(function(f,i){tone(f,0.2,'sine',i*0.09);});},
+  bad:function(){tone(220,0.25,'sawtooth',0,0.09);tone(160,0.3,'sawtooth',0.15,0.09);},
+  win:function(){[523,659,784,1047].forEach(function(f,i){tone(f,0.28,'sine',i*0.12);});},
+  end:function(){[392,330,262].forEach(function(f,i){tone(f,0.28,'triangle',i*0.14);});}
+};
+
+/* ===================== УВЕДОМЛЕНИЯ, КОНФЕТТИ, МОДАЛКА ===================== */
+function toast(msg,type){
+  var t=document.createElement('div');
+  t.className='toast '+(type||'');t.textContent=msg;
+  $('toasts').appendChild(t);
+  setTimeout(function(){t.classList.add('out');},2300);
+  setTimeout(function(){if(t.parentNode)t.parentNode.removeChild(t);},2800);
+}
+function confetti(n){
+  var cols=['#8b5cf6','#3b82f6','#22c55e','#f59e0b','#ec4899','#06b6d4'];
+  for(var i=0;i<n;i++){
+    var d=document.createElement('div');d.className='cf';
+    d.style.left=Math.random()*100+'vw';
+    d.style.background=cols[i%cols.length];
+    d.style.setProperty('--x',(Math.random()*160-80)+'px');
+    d.style.setProperty('--r',(Math.random()*720-360)+'deg');
+    d.style.animationDuration=(1.8+Math.random()*1.6)+'s';
+    d.style.animationDelay=(Math.random()*0.3)+'s';
+    document.body.appendChild(d);
+    (function(el){setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);},3800);})(d);
+  }
+}
+var modalYes=null,modalNo=null;
+function ask(text,yesLabel,onYes,onNo){
+  $('mtext').textContent=text;$('myes').textContent=yesLabel;
+  modalYes=onYes;modalNo=onNo||null;
+  $('modal').classList.add('show');$('myes').focus();
+}
+function closeModal(){$('modal').classList.remove('show');}
+$('myes').addEventListener('click',function(){closeModal();var f=modalYes;modalYes=null;if(f)f();});
+$('mno').addEventListener('click',function(){closeModal();var f=modalNo;modalNo=null;if(f)f();});
+
+/* ===================== ЭКРАНЫ ===================== */
+var current='home';
+function show(id){
+  var list=document.querySelectorAll('.screen');
+  for(var i=0;i<list.length;i++)list[i].classList.remove('active');
+  $('s-'+id).classList.add('active');
+  current=id;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function inGame(){return current==='game'&&G&&!G.finished;}
+function leaveGame(next){
+  if(!inGame()){next();return;}
+  pauseTimer(true);
+  ask('Выйти из игры? Прогресс текущего теста будет потерян.','Выйти',function(){stopTimer();G=null;next();},function(){pauseTimer(false);});
+}
+function goHome(){leaveGame(function(){updateHome();show('home');});}
+function goRules(){leaveGame(function(){show('rules');});}
+
+/* ===================== ГЛАВНЫЙ ЭКРАН ===================== */
+function poolSize(){
+  if(S.diff==='all')return BANK.length;
+  return BANK.filter(function(q){return q.l===+S.diff;}).length;
+}
+function effectiveCount(){return Math.min(S.count,poolSize());}
+function bestKey(){return 'sht_best_'+S.count+'_'+S.diff;}
+function getBest(){var r=store.get(bestKey());if(!r)return null;try{return JSON.parse(r);}catch(e){return null;}}
+function diffName(){return S.diff==='all'?'все уровни':LEVELS[+S.diff].n.toLowerCase();}
+
+function updateHome(){
+  $('chipQ').textContent=BANK.length+' вопросов';
+  Array.prototype.forEach.call($('segCount').children,function(b){b.classList.toggle('on',+b.dataset.v===S.count);});
+  Array.prototype.forEach.call($('segDiff').children,function(b){b.classList.toggle('on',b.dataset.v===S.diff);});
+  $('swTimer').classList.toggle('on',S.timer);
+  var ec=effectiveCount();
+  $('hint').textContent=ec<S.count?('На этом уровне всего '+ec+' вопросов — будет сыграно '+ec+'.'):'';
+  var b=getBest();
+  $('best').innerHTML=b
+    ?'🏅 Лучший результат: '+b.score+' очков <small>'+b.ok+' из '+b.total+' · точность '+b.acc+'% · '+esc(diffName())+'</small>'
+    :'🏅 Лучший результат пока не установлен <small>'+effectiveCount()+' вопросов · '+esc(diffName())+'</small>';
+  $('bSound').textContent=S.sound?'🔊':'🔇';
+  $('bTheme').textContent=S.theme==='dark'?'🌙':'☀️';
+}
+$('segCount').addEventListener('click',function(e){
+  var b=e.target.closest('button');if(!b)return;
+  S.count=+b.dataset.v;saveSettings();sfx.click();updateHome();
+});
+$('segDiff').addEventListener('click',function(e){
+  var b=e.target.closest('button');if(!b)return;
+  S.diff=b.dataset.v;saveSettings();sfx.click();updateHome();
+});
+$('swTimer').addEventListener('click',function(){S.timer=!S.timer;saveSettings();sfx.click();updateHome();});
+
+/* ===================== ИГРА ===================== */
+var G=null;
+
+function prepare(q){
+  var opts=shuffle([q.c].concat(q.w).map(function(t,i){return {t:t,ok:i===0};}));
+  return {l:q.l,t:q.t,q:q.q,e:q.e,opts:opts};
+}
+function buildQuiz(){
+  var picked=[];
+  if(S.diff==='all'){
+    var base=Math.floor(S.count/4),rem=S.count%4;
+    for(var l=0;l<4;l++){
+      var n=base+(l<rem?1:0);
+      var pool=shuffle(BANK.filter(function(q){return q.l===l;}));
+      picked=picked.concat(pool.slice(0,n));
+    }
+  }else{
+    var p=shuffle(BANK.filter(function(q){return q.l===+S.diff;}));
+    picked=p.slice(0,Math.min(S.count,p.length));
+  }
+  return picked.map(prepare);
+}
+function startGame(){
+  stopTimer();
+  G={quiz:buildQuiz(),i:0,correct:0,score:0,answered:false,sel:null,finished:false,cfg:{count:S.count,diff:S.diff}};
+  show('game');
+  renderQuestion();
+}
+function renderQuestion(){
+  var q=G.quiz[G.i];
+  G.answered=false;G.sel=null;
+  $('qn').textContent=G.i+1;$('qt').textContent=G.quiz.length;
+  $('cc').textContent=G.correct;$('sc').textContent=G.score;
+  $('prog').style.width=(G.i/G.quiz.length*100)+'%';
+  var lv=LEVELS[q.l];
+  var badge=$('lvl');badge.textContent=lv.n;badge.style.background=lv.c;
+  $('typ').textContent=TYPES[q.t];
+  $('qtext').textContent=q.q;
+  var box=$('opts');box.innerHTML='';
+  q.opts.forEach(function(o,i){
+    var b=document.createElement('button');
+    b.className='opt';b.type='button';b.dataset.i=i;
+    b.innerHTML='<span class="k">'+'ABCD'.charAt(i)+'</span><span>'+esc(o.t)+'</span>';
+    box.appendChild(b);
+  });
+  $('fb').className='fb hidden';$('fb').innerHTML='';
+  $('bAnswer').classList.remove('hidden');$('bAnswer').disabled=true;
+  $('bNext').classList.add('hidden');
+  $('bNext').textContent=(G.i===G.quiz.length-1)?'Показать результаты':'Следующий вопрос';
+  drawTimerToggle();
+  startTimer();
+}
+$('opts').addEventListener('click',function(e){
+  var b=e.target.closest('.opt');if(!b||!G||G.answered)return;
+  selectOption(+b.dataset.i);
+});
+function selectOption(i){
+  if(!G||G.answered||G.finished)return;
+  if(i<0||i>=G.quiz[G.i].opts.length)return;
+  G.sel=i;sfx.click();
+  Array.prototype.forEach.call($('opts').children,function(b,k){b.classList.toggle('sel',k===i);});
+  $('bAnswer').disabled=false;
+}
+$('bAnswer').addEventListener('click',function(){submit(false);});
+
+function submit(timeout){
+  if(!G||G.answered||G.finished)return;
+  if(!timeout&&G.sel===null)return;
+  G.answered=true;stopTimer();
+  var q=G.quiz[G.i];
+  var okIdx=q.opts.findIndex(function(o){return o.ok;});
+  var isOk=!timeout&&G.sel===okIdx;
+  if(isOk){G.correct++;G.score+=10;}
+  Array.prototype.forEach.call($('opts').children,function(b,k){
+    b.disabled=true;b.classList.remove('sel');
+    if(k===okIdx)b.classList.add('right');
+    else if(k===G.sel&&!isOk)b.classList.add('wrong');
+  });
+  $('cc').textContent=G.correct;$('sc').textContent=G.score;
+  $('prog').style.width=((G.i+1)/G.quiz.length*100)+'%';
+  var fb=$('fb');
+  var title,cls;
+  if(isOk){title='✅ Верно! +10 очков';cls='ok';}
+  else if(timeout){title='⏰ Время вышло';cls='bad';}
+  else{title='❌ Неверно';cls='bad';}
+  fb.className='fb '+cls;
+  fb.innerHTML='<h4>'+title+'</h4>'+
+    (isOk?'':'<div class="ans">Правильный ответ: '+esc(q.opts[okIdx].t)+'</div>')+
+    '<p>'+esc(q.e)+'</p>';
+  $('bAnswer').classList.add('hidden');
+  $('bNext').classList.remove('hidden');
+  if(isOk){sfx.ok();toast(PRAISE[Math.floor(Math.random()*PRAISE.length)]+' +10 очков','ok');confetti(22);}
+  else{sfx.bad();}
+}
+$('bNext').addEventListener('click',nextQuestion);
+function nextQuestion(){
+  if(!G||!G.answered||G.finished)return;
+  if(G.i>=G.quiz.length-1){finish();return;}
+  G.i++;renderQuestion();
+}
+
+/* ===== таймер ===== */
+var tInt=null,tPaused=false,tRem=0,tTot=0,tLast=0;
+function stopTimer(){if(tInt){clearInterval(tInt);tInt=null;}}
+function startTimer(){
+  stopTimer();
+  var on=S.timer;
+  $('timerChip').classList.toggle('hidden',!on);
+  $('tbarWrap').classList.toggle('hidden',!on);
+  $('timerChip').classList.remove('low');
+  if(!on||!G||G.answered)return;
+  tTot=LEVELS[G.quiz[G.i].l].t*1000;tRem=tTot;tLast=performance.now();tPaused=false;
+  drawTimer();
+  tInt=setInterval(tick,100);
+}
+function tick(){
+  var n=performance.now(),dt=n-tLast;tLast=n;
+  if(tPaused)return;
+  tRem-=dt;
+  if(tRem<=0){tRem=0;drawTimer();stopTimer();submit(true);return;}
+  drawTimer();
+}
+function drawTimer(){
+  var s=Math.ceil(tRem/1000);
+  $('tm').textContent=s+' с';
+  $('tbar').style.width=(tRem/tTot*100)+'%';
+  $('timerChip').classList.toggle('low',s<=5);
+}
+function pauseTimer(p){tPaused=p;tLast=performance.now();}
+function drawTimerToggle(){$('bTimerToggle').textContent=S.timer?'⏱ Таймер: вкл':'⏱ Таймер: выкл';}
+$('bTimerToggle').addEventListener('click',function(){
+  S.timer=!S.timer;saveSettings();sfx.click();drawTimerToggle();
+  if(G&&!G.answered)startTimer();
+  else{$('timerChip').classList.toggle('hidden',!S.timer);$('tbarWrap').classList.toggle('hidden',!S.timer);}
+});
+
+/* ===== завершение ===== */
+function countUp(el,to,suffix,ms){
+  var t0=performance.now();
+  (function step(now){
+    var k=Math.min(1,(now-t0)/ms);
+    el.textContent=Math.round(to*k)+(suffix||'');
+    if(k<1)requestAnimationFrame(step);
+  })(t0);
+}
+function finish(){
+  G.finished=true;stopTimer();
+  var total=G.quiz.length,ok=G.correct,bad=total-ok;
+  var acc=total?Math.round(ok/total*100):0;
+  var key='sht_best_'+G.cfg.count+'_'+G.cfg.diff;
+  var prev=null;
+  var raw=store.get(key);if(raw){try{prev=JSON.parse(raw);}catch(e){}}
+  var isRecord=!prev||G.score>prev.score;
+  if(isRecord)store.set(key,JSON.stringify({score:G.score,ok:ok,total:total,acc:acc}));
+  var best=isRecord?{score:G.score,acc:acc}:prev;
+
+  var title,icon;
+  if(acc>=90){title='Гроссмейстер логики';icon='🏆';}
+  else if(acc>=70){title='Мастер логики';icon='🥇';}
+  else if(acc>=50){title='Знаток логики';icon='🥈';}
+  else if(acc>=30){title='Любитель загадок';icon='🥉';}
+  else{title='Начинающий — тренируйтесь!';icon='🎯';}
+  $('rTrophy').textContent=icon;
+  $('rRank').textContent='Ваш ранг: '+title;
+  $('rRing').style.setProperty('--pct',acc);
+  countUp($('rPct'),acc,'%',900);
+  countUp($('rOk'),ok,'',700);
+  countUp($('rBad'),bad,'',700);
+  countUp($('rAcc'),acc,'%',900);
+  countUp($('rScore'),G.score,'',900);
+  var rec=$('rRec');
+  if(isRecord&&G.score>0){rec.className='rec new';rec.textContent='🎉 Новый рекорд: '+G.score+' очков!';}
+  else if(isRecord){rec.className='rec old';rec.textContent='Результат сохранён. Попробуйте набрать больше очков!';}
+  else{rec.className='rec old';rec.textContent='Лучший результат: '+best.score+' очков (точность '+best.acc+'%)';}
+  show('res');
+  if(isRecord&&G.score>0){toast('🏆 Новый рекорд!','gold');}
+  else{toast('Тест завершён! Ваш результат: '+G.score+' очков','');}
+  if(acc>=50){sfx.win();confetti(acc>=80?110:60);}else{sfx.end();}
+}
+
+/* ===================== КНОПКИ ===================== */
+$('bStart').addEventListener('click',function(){sfx.click();startGame();});
+$('bStart2').addEventListener('click',function(){sfx.click();startGame();});
+$('bRules2').addEventListener('click',function(){sfx.click();show('rules');});
+$('bBack').addEventListener('click',function(){sfx.click();updateHome();show('home');});
+$('bHome').addEventListener('click',function(){sfx.click();goHome();});
+$('brand').addEventListener('click',function(){sfx.click();goHome();});
+$('bRules').addEventListener('click',function(){sfx.click();goRules();});
+$('bAgain').addEventListener('click',function(){sfx.click();startGame();});
+$('bRestart').addEventListener('click',function(){sfx.click();G=null;updateHome();show('home');});
+$('bToHome').addEventListener('click',function(){sfx.click();G=null;updateHome();show('home');});
+$('bSound').addEventListener('click',function(){
+  S.sound=!S.sound;saveSettings();updateHome();
+  if(S.sound)sfx.click();
+  toast(S.sound?'Звук включён':'Звук выключен','');
+});
+function applyTheme(){document.documentElement.setAttribute('data-theme',S.theme);$('bTheme').textContent=S.theme==='dark'?'🌙':'☀️';}
+$('bTheme').addEventListener('click',function(){
+  S.theme=S.theme==='dark'?'light':'dark';saveSettings();applyTheme();sfx.click();
+});
+
+/* клавиатура */
+document.addEventListener('keydown',function(e){
+  if($('modal').classList.contains('show')){
+    if(e.key==='Escape'){$('mno').click();}
+    return;
+  }
+  if(current!=='game'||!G||G.finished)return;
+  if(e.key>='1'&&e.key<='4'){selectOption(+e.key-1);}
+  else if(e.key==='Enter'){
+    e.preventDefault();
+    if(!G.answered){submit(false);}else{nextQuestion();}
+  }
+});
+
+/* старт */
+applyTheme();
+updateHome();
+})();
+</script>
+</body>
+</html>
